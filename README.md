@@ -4,7 +4,7 @@ This app was created primarily for me. For local synchronization and for synchro
 <br>
 
 ## Getting started
-1. Download application for your OS [Link](https://github.com/olegtemek/t-backup/releases)
+1. Download application for your OS [Link](https://github.com/olegtemek/t-backup/releases/latest)
 
 2. Available flags <br>
 
