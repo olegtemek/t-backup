@@ -1,7 +1,10 @@
 package service
 
 import (
+	"errors"
+
 	"github.com/olegtemek/t-backup/internal/config"
+	"github.com/olegtemek/t-backup/internal/models"
 )
 
 type strategy interface {
@@ -45,6 +48,10 @@ func (s *Service) RunBackup() (err error) {
 
 	backupedPath, err := s.st.Save(s.cfg.OriginalPath, s.cfg.BackupPath)
 	if err != nil {
+		if errors.Is(err, models.E_NOTHING_TO_PUSH) {
+			err = nil
+			return
+		}
 		return
 	}
 

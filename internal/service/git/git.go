@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/olegtemek/t-backup/internal/models"
 )
 
 // Service struct
@@ -33,7 +35,12 @@ func (s *Service) CheckExist(originalPath string, backupPath string) (err error)
 func (s *Service) Save(originalPath string, _ string) (backupedPath string, err error) {
 
 	if count, errM := s.checkModifyedFiles(originalPath); errM != nil || count <= 0 {
-		err = fmt.Errorf("not modifyed files in path %s, ERROR: %s", originalPath, errM)
+		err = models.E_NOTHING_TO_PUSH
+		return
+	}
+
+	if err = s.runGitCommand(originalPath, "pull"); err != nil {
+		err = fmt.Errorf("error exec git pull: %s", err)
 		return
 	}
 
@@ -67,6 +74,7 @@ func (s *Service) checkModifyedFiles(path string) (modifiedFilesCount int, err e
 	cmd.Dir = path
 
 	output, err := cmd.Output()
+
 	if err != nil {
 		return
 	}
@@ -80,7 +88,7 @@ func (s *Service) checkModifyedFiles(path string) (modifiedFilesCount int, err e
 
 		status := line[:2]
 
-		if status == " M" || status == "A " || status == " D" || status == " R" {
+		if status != "" {
 			modifiedFilesCount++
 		}
 	}
